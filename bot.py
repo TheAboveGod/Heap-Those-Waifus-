@@ -71,7 +71,7 @@ def spawn_random_waifu(chat_id):
 
     # Make an API request to Anime-Planet to retrieve a random waifu
     # Adapt the following code based on the specific Anime-Planet API endpoint you want to use
-    response = pyrogram.Client.get(f"https://www.anime-planet.com/api/character/{random.randint(1, 10000)}")
+    response = request.get(f"https://www.anime-planet.com/api/character/{random.randint(1, 10000)}")
 
     if response.status_code == 200:
         waifu_data = response.json()
