@@ -21,14 +21,14 @@ message_count = 0
 spawned_waifu = None
 
 # Filter to check if it's the 10th message
-def tenth_message_filter(_, __, update):
+def tenth_message_filter(_, __, ___):
     global message_count
     message_count += 1
     return message_count % 10 == 0
 
 # Handle the 10th message event in group chat
 @app.on_message(filters.group & filters.text & tenth_message_filter)
-def handle_tenth_message(_, message):
+def handle_tenth_message(client, message):
     chat_id = message.chat.id
     spawn_random_waifu(chat_id)
 
