@@ -4,14 +4,14 @@ from pyrogram import Client, filters, idle
 from pymongo import MongoClient
 
 # Initialize the Pyrogram client
-api_id = "YOUR_API_ID"
-api_hash = "YOUR_API_HASH"
-bot_token = "YOUR_BOT_TOKEN"
+api_id = "21093975"
+api_hash = "1b4009789670ce79fb775ab4b8512149"
+bot_token = "6114185244:AAHkoM2xQPW_vPY2w2JPHgOxyinNn4SPBKA"
 
 app = Client("waifu_catch_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 # Connect to MongoDB
-mongo_url = "YOUR_MONGODB_URL"
+mongo_url = "mongodb+srv://sonu55:sonu55@cluster0.vqztrvk.mongodb.net/?retryWrites=true&w=majority"
 mongo_client = MongoClient(mongo_url)
 db = mongo_client["waifu_catch_bot"]
 waifus_collection = db["waifus"]
