@@ -42,35 +42,36 @@ def catch_waifu(_, message):
 
     # Check if the waifu is already caught
     if waifus_collection.find_one({"name": spawned_waifu["name"]}):
-        message.reply_text(f"{spawned_waifu['name']} from {spawned_waifu['anime']} is already caught!")
+        message.reply_text(f"{spawned_waifu['name']} from {spawned_waifu['series']} is already caught!")
         return
 
     # Save the caught waifu in the collection
     waifus_collection.insert_one({
         "name": spawned_waifu["name"],
-        "anime": spawned_waifu["anime"],
+        "series": spawned_waifu["series"],
         "image_url": spawned_waifu["image_url"]
     })
-    message.reply_text(f"Congratulations! You caught {spawned_waifu['name']} from {spawned_waifu['anime']}!")
+    message.reply_text(f"Congratulations! You caught {spawned_waifu['name']} from {spawned_waifu['series']}!")
 
 
 def spawn_random_waifu(chat_id):
     global spawned_waifu
 
-    # Set your MAL API username and password
-    username = "9c35b9e4b9a9aadbf189c4500bb50968"
-    password = "768d6227f1336bc49cf142722a11d20de49590eb69098b377934d1d6e5dbd29c"
+    # Set your Kitsu API headers
+    headers = {
+        "Accept": "application/vnd.api+json",
+        "Content-Type": "application/vnd.api+json"
+    }
 
-    # Make an API request to MyAnimeList to retrieve a random character
-    response = requests.get("https://api.myanimelist.net/v2/anime/1/characters", auth=(username, password))
+    # Make an API request to Kitsu to retrieve a random character
+    response = requests.get("https://kitsu.io/api/edge/characters?page[limit]=1&page[offset]=0", headers=headers)
     if response.status_code == 200:
-        anime_data = response.json()
-        characters = anime_data["characters"]
-        random_character = random.choice(characters)
+        character_data = response.json()["data"][0]
+        attributes = character_data["attributes"]
         spawned_waifu = {
-            "name": random_character["name"],
-            "series": anime_data["title"],
-            "image_url": random_character["image_url"]
+            "name": attributes["name"],
+            "series": attributes["media"]["data"]["attributes"]["titles"]["en"],
+            "image_url": attributes["image"]["original"]
         }
 
         # Send the waifu image to the chat
@@ -80,4 +81,4 @@ def spawn_random_waifu(chat_id):
 
 # Start the bot
 app.run()
-idle() 
+idle()
