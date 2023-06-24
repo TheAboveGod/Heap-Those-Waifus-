@@ -20,20 +20,6 @@ waifus_collection = db["waifus"]
 message_count = 0
 spawned_waifu = None
 
-
-@app.on_message(filters.group)
-def handle_group_messages(_, message):
-    global message_count
-
-    # Increment the message count
-    message_count += 1
-
-    if message_count == 10:
-        chat_id = message.chat.id
-        spawn_random_waifu(chat_id)
-        message_count = 0
-
-
 # Command to catch a waifu
 @app.on_message(filters.command("catch"))
 def catch_waifu(_, message):
@@ -55,30 +41,32 @@ def catch_waifu(_, message):
 
     # Check if the waifu is already caught
     if waifus_collection.find_one({"name": spawned_waifu["name"]}):
-        message.reply_text(f"{spawned_waifu['name']} from {spawned_waifu['series']} is already caught!")
+        message.reply_text(f"{spawned_waifu['name']} from {spawned_waifu['anime']} is already caught!")
         return
 
     # Save the caught waifu in the collection
     waifus_collection.insert_one({
         "name": spawned_waifu["name"],
-        "series": spawned_waifu["series"],
+        "anime": spawned_waifu["anime"],
         "image_url": spawned_waifu["image_url"]
     })
-    message.reply_text(f"Congratulations! You caught {spawned_waifu['name']} from {spawned_waifu['series']}!")
+    message.reply_text(f"Congratulations! You caught {spawned_waifu['name']} from {spawned_waifu['anime']}!")
 
 # Spawn a random waifu with an image
 def spawn_random_waifu(chat_id):
     global spawned_waifu
 
-    # Make an API request to Anime-Planet to retrieve a random waifu
-    # Adapt the following code based on the specific Anime-Planet API endpoint you want to use
-    response = app.get(f"https://www.anime-planet.com/api/character/{random.randint(1, 10000)}")
+    # Generate a random anime character ID
+    character_id = random.randint(1, 10000)
+
+    # Make an API request to MyAnimeList to retrieve a random waifu
+    response = requests.get(f"https://api.myanimelist.net/v2/characters/{character_id}")
 
     if response.status_code == 200:
-        waifu_data = response.json()
+        waifu_data = response.json()["data"]
         spawned_waifu = {
             "name": waifu_data["name"],
-            "series": waifu_data["series"],
+            "anime": waifu_data["animeography"][0]["name"],
             "image_url": waifu_data["image_url"]
         }
 
@@ -87,7 +75,17 @@ def spawn_random_waifu(chat_id):
     else:
         print("Failed to spawn a waifu. Please try again.")
 
+# Handle messages in group chats
+@app.on_message(filters.group)
+def handle_group_messages(_, message):
+    global message_count
+
+    # Increment the message count
+    message_count += 1
+
+    if message_count % 10 == 0:
+        spawn_random_waifu(message.chat.id)
 
 # Start the bot
 app.run()
-idle()
+idle() 
