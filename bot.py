@@ -16,6 +16,9 @@ mongo_client = MongoClient(mongo_url)
 db = mongo_client["waifu_catch_bot"]
 waifus_collection = db["waifus"]
 
+# Global variables
+message_count = 0
+spawned_waifu = None
 
 
 @app.on_message(filters.group)
