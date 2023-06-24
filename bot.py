@@ -16,21 +16,19 @@ mongo_client = MongoClient(mongo_url)
 db = mongo_client["waifu_catch_bot"]
 waifus_collection = db["waifus"]
 
-# Global variables
-message_count = 0
-spawned_waifu = None
 
-# Filter to check if it's the 10th message
-def tenth_message_filter(_, __, ___):
+
+@app.on_message(filters.group)
+def handle_group_messages(_, message):
     global message_count
-    message_count += 1
-    return message_count % 10 == 0
 
-# Handle the 10th message event in group chat
-@app.on_message(filters.group & filters.text & tenth_message_filter)
-def handle_tenth_message(client, message):
-    chat_id = message.chat.id
-    spawn_random_waifu(chat_id)
+    # Increment the message count
+    message_count += 1
+
+    if message_count == 10:
+        chat_id = message.chat.id
+        spawn_random_waifu(chat_id)
+        message_count = 0
 
 
 # Command to catch a waifu
