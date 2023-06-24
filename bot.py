@@ -53,39 +53,30 @@ def catch_waifu(_, message):
     })
     message.reply_text(f"Congratulations! You caught {spawned_waifu['name']} from {spawned_waifu['anime']}!")
 
-# Spawn a random waifu with an image
+
 def spawn_random_waifu(chat_id):
     global spawned_waifu
 
-    # Generate a random anime character ID
-    character_id = random.randint(1, 10000)
+    # Set your MAL API username and password
+    username = "9c35b9e4b9a9aadbf189c4500bb50968"
+    password = "768d6227f1336bc49cf142722a11d20de49590eb69098b377934d1d6e5dbd29c"
 
-    # Make an API request to MyAnimeList to retrieve a random waifu
-    response = requests.get(f"https://api.myanimelist.net/v2/characters/{character_id}")
-
+    # Make an API request to MyAnimeList to retrieve a random character
+    response = requests.get("https://api.myanimelist.net/v2/anime/1/characters", auth=(username, password))
     if response.status_code == 200:
-        waifu_data = response.json()["data"]
+        anime_data = response.json()
+        characters = anime_data["characters"]
+        random_character = random.choice(characters)
         spawned_waifu = {
-            "name": waifu_data["name"],
-            "anime": waifu_data["animeography"][0]["name"],
-            "image_url": waifu_data["image_url"]
+            "name": random_character["name"],
+            "series": anime_data["title"],
+            "image_url": random_character["image_url"]
         }
 
         # Send the waifu image to the chat
         app.send_photo(chat_id=chat_id, photo=spawned_waifu["image_url"])
     else:
         print("Failed to spawn a waifu. Please try again.")
-
-# Handle messages in group chats
-@app.on_message(filters.group)
-def handle_group_messages(_, message):
-    global message_count
-
-    # Increment the message count
-    message_count += 1
-
-    if message_count % 10 == 0:
-        spawn_random_waifu(message.chat.id)
 
 # Start the bot
 app.run()
