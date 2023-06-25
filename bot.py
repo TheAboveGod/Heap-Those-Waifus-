@@ -22,7 +22,7 @@ message_count = 0
 spawned_waifu = None
 
 # Command to catch a waifu
-@app.on_message(filters.command("catch"))
+@app.on_message(filters.command("heap"))
 def catch_waifu(_, message):
     if not spawned_waifu:
         message.reply_text("There is no spawned waifu currently. Please wait for a new waifu to appear.")
@@ -33,7 +33,7 @@ def catch_waifu(_, message):
 
     if not character_name:
         message.reply_text("Please provide the name of the waifu you want to catch. "
-                           "Use the command in the format: `/catch character_name`.")
+                           "Use the command in the format: `/heap character_name`.")
         return
 
     if character_name.lower() != spawned_waifu["name"].lower():
